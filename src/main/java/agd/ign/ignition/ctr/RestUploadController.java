@@ -107,7 +107,7 @@ public class RestUploadController {
 
             BasicFileAttributes attr = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
 
-            System.out.println("creationTime: " + attr.creationTime());
+            //System.out.println("creationTime: " + attr.creationTime());
             //System.out.println("lastAccessTime: " + attr.lastAccessTime());
             //System.out.println("lastModifiedTime: " + attr.lastModifiedTime());
 
@@ -123,12 +123,12 @@ public class RestUploadController {
         return rv;
     }
 
-    @PostMapping(path = "/files/delete/{fileName:.+}", produces = "application/json")
+    @RequestMapping(path = "/files/delete/{fileName:.+}")
     @ResponseBody
     public OkResponseDto deleteFile(@PathVariable(name = "fileName") String fileName,
                                     HttpServletResponse response) throws IOException, InterruptedException {
 
-        logger.debug("Single file delete: " + fileName);
+        logger.info("Single file delete: " + fileName);
 
         Path filePath = new File(UPLOADED_FOLDER + File.separator + fileName).toPath().toAbsolutePath();
 

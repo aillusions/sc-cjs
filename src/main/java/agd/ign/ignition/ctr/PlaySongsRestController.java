@@ -16,6 +16,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -73,6 +74,8 @@ public class PlaySongsRestController {
                 rv.getAvailableSongsList().add(songDto);
             }
         }
+
+        Collections.shuffle(rv.getAvailableSongsList());
 
         return rv;
     }
