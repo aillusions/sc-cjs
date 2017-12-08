@@ -1,5 +1,7 @@
 package agd.ign.ignition.ctr;
 
+import agd.ign.ignition.app.data.UserDao;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -18,4 +20,7 @@ public class WelcomeController {
     public String home() {
         return "html/index.html";
     }
+
+    @Autowired
+    private UserDao userDao;
 }
