@@ -1,10 +1,15 @@
 /**
  *
  */
-IGNITION_FRONT_APP.controller('ignitionFrontMainCtrl', ['$scope', '$timeout', 'ignitionFrontDas', 'ignitionAvailRecsSrv', function ($scope, $timeout, ignitionFrontDas, ignitionAvailRecsSrv) {
+IGNITION_FRONT_APP.controller('ignitionFrontMainCtrl', ['$scope', '$timeout', 'ignitionFrontDas', 'ignitionAvailRecsSrv','webSocketService', function ($scope, $timeout, ignitionFrontDas, ignitionAvailRecsSrv, webSocketService) {
     var vm = this;
 
 
+    webSocketService.initializeWebSocketConnection();
+
+    /*webSocketService.addWebSocketTopicListener(spaWebSocketService.WebSocketDestination.WebSocketQueues.MESSAGING_THREAD_UPDATE_QUEUE, function (AbstractThreadUpdateRevDto) {
+
+    });*/
 
 
     vm.initIgnitionFront = function () {
