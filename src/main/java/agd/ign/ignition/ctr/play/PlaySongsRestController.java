@@ -74,7 +74,7 @@ public class PlaySongsRestController {
             String songId = file.getName();
             if (file.isDirectory()) {
                 StringUtils.containsIgnoreCase(songId, ".mp3");
-                System.out.println("Found recording: " + songId);
+                // System.out.println("Found recording: " + songId);
 
                 AvailSongDto songDto = new AvailSongDto();
                 songDto.setAvailSongId(songId);
