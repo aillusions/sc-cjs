@@ -20,9 +20,9 @@ public class FeedRestController {
     private AsyncService asyncService;
 
 
-    // http://localhost:8090/ignition/rest/list
+    // http://localhost:8090/ignition/rest/feed
     @ExecutionTime(ms = 20)
-    @RequestMapping(value = "/list", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/feed", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     public GetAvailSongsDto listSongs() {
 
