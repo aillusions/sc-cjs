@@ -1,4 +1,4 @@
-package agd.ign.ignition.ctr;
+package agd.ign.ignition.ctr.adm;
 
 import agd.ign.ignition.AsyncService;
 import agd.ign.ignition.dto.AboutIgnitionDto;
