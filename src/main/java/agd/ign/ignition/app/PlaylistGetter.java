@@ -9,14 +9,21 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 
 /**
  * @author aillusions
  */
 public class PlaylistGetter {
 
+    private final String STORAGE_PATH;
+
+    public PlaylistGetter(String path) {
+        STORAGE_PATH = path;
+    }
+
     //private static final String STORAGE_PATH = "down";
-    public static final String STORAGE_PATH = "g:\\env\\media";
+    //public static final String STORAGE_PATH = "g:\\env\\media";
 
     private static final String PLAYLIST_FILE_NAME = "playlist.m3u8";
     private static final String META_FILE_NAME = "metadata.json";
@@ -29,7 +36,7 @@ public class PlaylistGetter {
      * https://cf-hls-opus-media.sndcdn.com/playlist/X8CS2k3gj9mG.64.opus/playlist.m3u8?Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiKjovL2NmLWhscy1vcHVzLW1lZGlhLnNuZGNkbi5jb20vcGxheWxpc3QvWDhDUzJrM2dqOW1HLjY0Lm9wdXMvcGxheWxpc3QubTN1OCIsIkNvbmRpdGlvbiI6eyJEYXRlTGVzc1RoYW4iOnsiQVdTOkVwb2NoVGltZSI6MTUxMTM1NDU0Nn19fV19&Signature=o~0kzT98UbC2JAe9ZPipqcTT2yXCR4FWJUwXwGdWzglEEXKtnN0kioud3fmuU9onNfzAKWaOajVAkIHtQEFHZzZ4thlcK-3bII1NsS1dWAMumpon0Ru8VG0PwJZ~NWBR0Z1yzasI1lPeJESF1jFf~irN9uw0ZX3WUnGjbCh4mqeGXhFjkoKdkIZdAI14GDHGNqTJbuS6kUxmTqKKh1TQwW2W8wkf7INHvki65uwy1ARiOuAytKWx~StrgNwPEJS-KwOKRt1e7xyfkThnnCiY5oL94CODqIKYTvGiQ-vdumkeXjvwpd2CSusBSDIqr2Tg~YWqM-wGTlLLqJfH6EptCA__&Key-Pair-Id=APKAJAGZ7VMH2PFPW6UQ
      * https://cf-hls-media.sndcdn.com/playlist/7BSlpZTiK3pe.128.mp3/playlist.m3u8?Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiKjovL2NmLWhscy1tZWRpYS5zbmRjZG4uY29tL3BsYXlsaXN0LzdCU2xwWlRpSzNwZS4xMjgubXAzL3BsYXlsaXN0Lm0zdTgiLCJDb25kaXRpb24iOnsiRGF0ZUxlc3NUaGFuIjp7IkFXUzpFcG9jaFRpbWUiOjE1MTExMDQ1MTN9fX1dfQ__&Signature=PgbJpqIyCK2G08qV4aWH7PBl3fpnnh6RjL6h4FE6LbOFxbNQANJisYhr5KnLiWRx20CoyonMiTGrNDCtE~sCASixafs~MoqeEhM60rfHNOCKw86NR0hyXBwqZUr5eVolxZny8SYgebnR-~QMQ8uxWtDkG-2LprDW8EwZwHKevOIqHHel~8oEiEBukmTSYGqH6cZLbmXztTJ82wej7bz6m5K1ntMReMJHfnoMSZbas5K3u1vx32e3x3fgN~xN3a4GPzeWlO76w4dLvQxc5vAa65c2Uour1Nbnu3y93~oyWjm-1R~KOCl53A9Ykt-N8BBx3RXwSl4YVA~Q2FKRaDHsGw__&Key-Pair-Id=APKAJAGZ7VMH2PFPW6UQ
      */
-    public static void downloadPlayList(String url, Path playlistFilePath) throws IOException {
+    public void downloadPlayList(String url, Path playlistFilePath) throws IOException {
 
         String playListFilePathStr = playlistFilePath.toAbsolutePath().toString();
 
@@ -49,29 +56,29 @@ public class PlaylistGetter {
         throw new RuntimeException("Unexpected url: " + url);
     }
 
-    public static Path getAbsoluteStoragePath() {
+    public Path getAbsoluteStoragePath() {
         return new File(STORAGE_PATH).toPath();
     }
 
-    public static Path getSongBasePath(String songId) {
+    public Path getSongBasePath(String songId) {
         return new File(STORAGE_PATH + File.separator + songId).toPath().toAbsolutePath();
     }
 
-    public static Path getSongFragmentPath(String songId, String fileName) {
+    public Path getSongFragmentPath(String songId, String fileName) {
         return new File(STORAGE_PATH + File.separator + songId + File.separator + fileName).toPath().toAbsolutePath();
     }
 
-    public static String getSongBasePathStr(String songId) {
+    public  String getSongBasePathStr(String songId) {
         String rv = getSongBasePath(songId).toString();
         new File(rv).mkdir();
         return rv;
     }
 
-    public static Path getSongPlaylistPath(String songId) {
+    public  Path getSongPlaylistPath(String songId) {
         return new File(getSongBasePathStr(songId) + File.separator + PLAYLIST_FILE_NAME).toPath();
     }
 
-    public static Path getSongMetadataPath(String songId) {
+    public  Path getSongMetadataPath(String songId) {
         return new File(getSongBasePathStr(songId) + File.separator + META_FILE_NAME).toPath();
     }
 
@@ -79,7 +86,7 @@ public class PlaylistGetter {
         return "" + i + ".mp3";
     }
 
-    public static Path getSongMp3Path(int i, String songId) {
+    public  Path getSongMp3Path(int i, String songId) {
         return new File(getSongBasePathStr(songId) + File.separator + getMp3FileName(i)).toPath();
     }
 
@@ -96,6 +103,46 @@ public class PlaylistGetter {
         PrintWriter out = new PrintWriter(metaPath.toFile());
         out.println(new ObjectMapper().writeValueAsString(dto));
         out.close();
+    }
+
+
+    public void downloadFragments(NewSongDto dto) {
+
+        String url = dto.getScCjsSongPlayListUrl();
+        try {
+
+            String songId = PlaylistGetter.getSongId(url);
+
+            Path playlistFilePath = getSongPlaylistPath(songId);
+            if (playlistFilePath.toFile().exists()) {
+                throw new RuntimeException("Already indexed: " + songId);
+            }
+            downloadPlayList(url, playlistFilePath);
+
+            List<String> partUrls = PlaylistReader.getPartUrls(playlistFilePath);
+
+            int i = 0;
+            for (String partUrl : partUrls) {
+
+                Path fragmentPath = getSongMp3Path(i, songId);
+
+                String playListFilePathStr = fragmentPath.toAbsolutePath().toString();
+                System.out.println("Saving fragment: " + playListFilePathStr + " (" + (i + 1) + " of " + partUrls.size() + ")");
+
+                PlaylistGetter.downloadFragment(fragmentPath, partUrl);
+
+                i++;
+            }
+
+            Path metaPath = getSongMetadataPath(songId);
+            PlaylistGetter.saveMetadata(metaPath, dto);
+
+            System.out.println("Done: " + dto.getScCjsSongTitle());
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
     }
 }
 

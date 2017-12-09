@@ -1,15 +1,11 @@
 package agd.ign.ignition;
 
 import agd.ign.ignition.app.PlaylistGetter;
-import agd.ign.ignition.app.PlaylistReader;
 import agd.ign.ignition.dto.put.NewSongDto;
-import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
-
-import java.nio.file.Path;
-import java.util.List;
 
 /**
  * @author aillusions
@@ -20,40 +16,13 @@ public class AsyncService {
 
     @Async()
     public void asyncDownloadFragments(NewSongDto dto) {
+        getPlaylistGetter().downloadFragments(dto);
+    }
 
-        String url = dto.getScCjsSongPlayListUrl();
-        try {
+    @Value("${ignition.data.path}")
+    private String dataPath;
 
-            String songId = PlaylistGetter.getSongId(url);
-
-            Path playlistFilePath = PlaylistGetter.getSongPlaylistPath(songId);
-            if (playlistFilePath.toFile().exists()) {
-                throw new RuntimeException("Already indexed: " + songId);
-            }
-            PlaylistGetter.downloadPlayList(url, playlistFilePath);
-
-            List<String> partUrls = PlaylistReader.getPartUrls(playlistFilePath);
-
-            int i = 0;
-            for (String partUrl : partUrls) {
-
-                Path fragmentPath = PlaylistGetter.getSongMp3Path(i, songId);
-
-                String playListFilePathStr = fragmentPath.toAbsolutePath().toString();
-                System.out.println("Saving fragment: " + playListFilePathStr + " (" + (i + 1) + " of " + partUrls.size() + ")");
-
-                PlaylistGetter.downloadFragment(fragmentPath, partUrl);
-
-                i++;
-            }
-
-            Path metaPath = PlaylistGetter.getSongMetadataPath(songId);
-            PlaylistGetter.saveMetadata(metaPath, dto);
-
-            System.out.println("Done: " + dto.getScCjsSongTitle());
-
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
+    public PlaylistGetter getPlaylistGetter() {
+        return new PlaylistGetter(dataPath);
     }
 }

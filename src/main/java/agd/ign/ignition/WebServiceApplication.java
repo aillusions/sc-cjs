@@ -19,6 +19,7 @@ import java.util.concurrent.Executor;
 @EnableAsync
 //@EntityScan("com.delivery.domain")
 //@EnableJpaRepositories("com.delivery.repository")
+
 public class WebServiceApplication extends SpringBootServletInitializer {
 
     @Bean(name = "threadPoolTaskExecutor")

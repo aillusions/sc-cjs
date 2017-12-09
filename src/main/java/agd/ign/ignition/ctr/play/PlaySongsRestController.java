@@ -1,10 +1,14 @@
-package agd.ign.ignition.ctr;
+package agd.ign.ignition.ctr.play;
 
+import agd.ign.ignition.AsyncService;
 import agd.ign.ignition.app.PlaylistGetter;
 import agd.ign.ignition.dto.get.AvailSongDto;
 import agd.ign.ignition.dto.get.GetAvailSongsDto;
+import lombok.Getter;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.CacheControl;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,16 +27,20 @@ import java.util.concurrent.TimeUnit;
 @RestController()
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RequestMapping("/rest")
+@Getter
 public class PlaySongsRestController {
 
-    // https://localhost/ignition/rest/play/2EFq0rCJ3Zz3.128.mp3
+    @Autowired
+    private AsyncService asyncService;
+
+    // http://localhost:8090/ignition/rest/play/2EFq0rCJ3Zz3.128.mp3/0
     @RequestMapping(value = "/play/{songId:.+}/{fragIdx}", method = RequestMethod.GET)
     public void getSongFragment(@PathVariable(name = "songId") String songId,
                                 @PathVariable(name = "fragIdx") Integer fragIdx,
                                 HttpServletResponse response) throws IOException, InterruptedException {
 
 
-        Path fragPath = PlaylistGetter.getSongFragmentPath(songId, String.valueOf(4 + fragIdx) + ".mp3");
+        Path fragPath = asyncService.getPlaylistGetter().getSongFragmentPath(songId, String.valueOf(4 + fragIdx) + ".mp3");
 
         System.out.println("Transferring: " + fragPath);
 
@@ -57,7 +65,7 @@ public class PlaySongsRestController {
 
         GetAvailSongsDto rv = new GetAvailSongsDto();
 
-        File folder = PlaylistGetter.getAbsoluteStoragePath().toFile();
+        File folder = asyncService.getPlaylistGetter().getAbsoluteStoragePath().toFile();
         File[] listOfFiles = folder.listFiles();
 
         for (File file : listOfFiles) {
@@ -77,5 +85,6 @@ public class PlaySongsRestController {
 
         return rv;
     }
+
 
 }
