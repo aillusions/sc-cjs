@@ -7,6 +7,8 @@ IGNITION_FRONT_APP.service('webSocketService', ['$rootScope', '$timeout', '$q', 
     var RECONNECT_TIMEOUT_MS = _.random(5 * 1000, 100 * 1000);
     var DISCONNECT_ACKNOWLEDGE_TIMEOUT_MS = 5 * 1000;
 
+    var SOCK_JS_CONNECT_URI = "/ignition/stomp-endpoint";
+
     var SUBSCRIBE_TOPIC = '/mktWsApp/session/setup';
 
     srv.WebSocketDestination = {
@@ -60,7 +62,7 @@ IGNITION_FRONT_APP.service('webSocketService', ['$rootScope', '$timeout', '$q', 
     //
 
     function stompConnect() {
-        var socket = new SockJS("/SockJS/stomp-endpoint");
+        var socket = new SockJS(SOCK_JS_CONNECT_URI);
         stompClient = Stomp.over(socket);
         stompClient.debug = function (msg) {
             // Uncomment for debugging
@@ -95,11 +97,11 @@ IGNITION_FRONT_APP.service('webSocketService', ['$rootScope', '$timeout', '$q', 
         notifyConnected();
         console.info("spaWebSocketService: connected as user name: " + sessionUserName);
 
-        if (!sessionUserName) {
+        /*if (!sessionUserName) {
             console.info("spaWebSocketService: no WS subscriptions for anon users. Disconnecting.");
             disconnectStompClient();
             return;
-        }
+        }*/
 
         setupWsConnectionSession();
     }
