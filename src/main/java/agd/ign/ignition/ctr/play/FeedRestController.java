@@ -5,12 +5,21 @@ import agd.ign.ignition.dto.get.AvailSongDto;
 import agd.ign.ignition.dto.get.GetAvailSongsDto;
 import agd.ign.ignition.sys.ExecutionTime;
 import lombok.Getter;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.CacheControl;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -22,7 +31,7 @@ import java.util.stream.Collectors;
 @Getter
 public class FeedRestController {
 
-    private final int MAX_RECS_FEED = 10;
+    private final int MAX_RECS_FEED = 3;
 
     @Autowired
     private AsyncService asyncService;
@@ -31,7 +40,7 @@ public class FeedRestController {
 
     // http://localhost:8090/ignition/rest/feed
     @ExecutionTime(ms = 10)
-    @RequestMapping(value = "/feed", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/feed/next", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     public GetAvailSongsDto listSongs() {
 
@@ -52,6 +61,33 @@ public class FeedRestController {
         DELIVERED_RECS.addAll(recIds);
 
         return rv;
+    }
+
+
+    // http://localhost:8090/ignition/rest/feed/play/2EFq0rCJ3Zz3.128.mp3
+    @RequestMapping(value = "/play/{songId:.+}/{fragIdx}", method = RequestMethod.GET)
+    @ExecutionTime(ms = 20)
+    public void getSongFragment(@PathVariable(name = "songId") String songId,
+                                @PathVariable(name = "fragIdx") Integer fragIdx,
+                                HttpServletResponse response) throws IOException, InterruptedException {
+
+
+        Path fragPath = asyncService.getPlaylistGetter().getSongFragmentPath(songId, String.valueOf(4 + fragIdx) + ".mp3");
+
+        System.out.println("Transferring: " + fragPath);
+
+        File songFragment = fragPath.toFile();
+        InputStream in = new FileInputStream(songFragment);
+
+        response.setContentType("audio/mp3");
+
+        response.addHeader("Cache-Control", CacheControl.maxAge(1, TimeUnit.HOURS).cachePublic().getHeaderValue());
+
+        //Thread.sleep(500);
+
+        IOUtils.copy(in, response.getOutputStream());
+
+        in.close();
     }
 
 }

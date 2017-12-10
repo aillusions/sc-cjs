@@ -1,6 +1,7 @@
 package agd.ign.ignition.ctr.play;
 
 import agd.ign.ignition.AsyncService;
+import agd.ign.ignition.app.PlaylistGetter;
 import agd.ign.ignition.dto.get.AvailSongDto;
 import agd.ign.ignition.dto.get.GetAvailSongsDto;
 import agd.ign.ignition.sys.ExecutionTime;
@@ -18,6 +19,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -66,24 +69,30 @@ public class PlaySongsRestController {
 
         GetAvailSongsDto rv = new GetAvailSongsDto();
 
-        File folder = asyncService.getPlaylistGetter().getAbsoluteStoragePath().toFile();
+        for (String songId : getRecIds(asyncService.getPlaylistGetter())) {
+            AvailSongDto songDto = new AvailSongDto();
+            songDto.setAvailSongId(songId);
+            rv.getAvailableSongsList().add(songDto);
+        }
+
+        Collections.shuffle(rv.getAvailableSongsList());
+
+        return rv;
+    }
+
+    public static Set<String> getRecIds(PlaylistGetter playlistGetter) {
+        Set<String> rv = new HashSet<>();
+
+        File folder = playlistGetter.getAbsoluteStoragePath().toFile();
         File[] listOfFiles = folder.listFiles();
 
         for (File file : listOfFiles) {
 
             String songId = file.getName();
-            if (file.isDirectory()) {
-                StringUtils.containsIgnoreCase(songId, ".mp3");
-                // System.out.println("Found recording: " + songId);
-
-                AvailSongDto songDto = new AvailSongDto();
-                songDto.setAvailSongId(songId);
-                rv.getAvailableSongsList().add(songDto);
+            if (file.isDirectory() && StringUtils.containsIgnoreCase(songId, ".mp3")) {
+                rv.add(songId);
             }
         }
-
-        Collections.shuffle(rv.getAvailableSongsList());
-
         return rv;
     }
 
