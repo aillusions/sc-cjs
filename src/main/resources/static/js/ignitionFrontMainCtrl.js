@@ -13,7 +13,7 @@ IGNITION_FRONT_APP.controller('ignitionFrontMainCtrl', ['$scope', '$timeout', 'i
         if (payload.isServerOnline) {
 
             webSocketService.addWebSocketTopicListener(webSocketService.WebSocketDest.WebSocketTopics.GREETINGS_TOPIC, function (payload) {
-                console.info("Greeting ws notification: " + payload.content);
+                console.info("Greeting ws notification: " + (payload.content || payload.testField));
             });
 
             $timeout(function () {

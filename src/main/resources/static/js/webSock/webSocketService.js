@@ -27,7 +27,6 @@ IGNITION_FRONT_APP.service('webSocketService', ['$rootScope', '$timeout', '$q', 
     var stompClient = null;
     var isStompConnected = false;
     var sessionUserName = null;
-    var sessionCompanyId = null;
 
     srv.initializeWebSocketConnection = function () {
         stompConnect();
@@ -108,7 +107,6 @@ IGNITION_FRONT_APP.service('webSocketService', ['$rootScope', '$timeout', '$q', 
         var origStompConnected = isStompConnected;
         isStompConnected = false;
         sessionUserName = null;
-        sessionCompanyId = null;
 
         // If went from connected to disconnected
         if (origStompConnected && !isStompConnected) {
