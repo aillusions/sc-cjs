@@ -70,7 +70,7 @@ IGNITION_FRONT_APP.controller('ignitionPlayCtrl', ['$scope', '$timeout', 'igniti
 
         var audio = playSongFragment(songByIdx.ignitionAvailSongId, fragIdx);
 
-        audio.addEventListener('playing', function () {
+        audio.addAppEventListener('playing', function () {
 
             if (CURRENT_PLAYING_AUDIO) {
                 CURRENT_PLAYING_AUDIO.pause();
@@ -86,7 +86,7 @@ IGNITION_FRONT_APP.controller('ignitionPlayCtrl', ['$scope', '$timeout', 'igniti
 
         }, true);
 
-        /*audio.addEventListener('ended', function () {
+        /*audio.addAppEventListener('ended', function () {
             vm.findAndPlayNextRecording();
         }, true);*/
     }

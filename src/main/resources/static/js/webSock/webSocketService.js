@@ -9,18 +9,18 @@ IGNITION_FRONT_APP.service('webSocketService', ['$rootScope', '$timeout', '$q', 
 
     var SOCK_JS_CONNECT_URI = "/ignition/stomp-endpoint";
 
-    var SUBSCRIBE_TOPIC = '/mktWsApp/session/setup';
+    var subscribedDestinations = [];
 
-    srv.WebSocketDestination = {
+    srv.WebSocketDest = {
         SERVER_AVAILABILITY_EVT: "SERVER_AVAILABILITY_EVT",
         WebSocketTopics: {
-            COMPANY_AVAILABILITY_TOPIC: '/topic/companyAvailability'
+            GREETINGS_TOPIC: '/topic/greetings'
         },
-        WebSocketQueues: {
+        /*WebSocketQueues: {
             MESSAGING_THREAD_UPDATE_QUEUE: '/mktWsUser/queue/threadUpdated'
-        },
+        },*/
         WebSocketMessage: {
-            USER_TYPING_MESSAGE: '/mktWsApp/userTypingWebSockMsg'
+            GREETING_MESSAGE: '/ignWsApp/hello'
         }
     };
 
@@ -33,19 +33,32 @@ IGNITION_FRONT_APP.service('webSocketService', ['$rootScope', '$timeout', '$q', 
         stompConnect();
     };
 
+    srv.addWebSocketConnectionListener = function (callback) {
+        var topicName = srv.WebSocketDest.SERVER_AVAILABILITY_EVT;
+        eventsService.addAppEventListener(topicName, callback);
+        console.info("addWebSocketConnectionListener: subscribed.");
+    };
+
+    srv.removeWebSocketConnectionListener = function (callback) {
+        var topicName = srv.WebSocketDest.SERVER_AVAILABILITY_EVT;
+        eventsService.removeAppEventListener(topicName, callback);
+        console.info("removeWebSocketConnectionListener: unSubscribed");
+    };
+
     srv.addWebSocketTopicListener = function (topicName, callback) {
-        if (!topicName || !callback) {
-            throw "Unable to subscribe WebSocket: not enough data."
-        }
-        eventsService.addEventListener(topicName, callback);
+        eventsService.addAppEventListener(topicName, callback);
         console.info("addWebSocketTopicListener: subscribed for: " + topicName);
+
+        if(!_.includes(subscribedDestinations, topicName)){
+            stompClient.subscribe(topicName, function (webSockMessage) {
+                var payloadBodyDto = JSON.parse(webSockMessage['body']);
+                fireWebSocketDest(topicName, payloadBodyDto)
+            });
+        }
     };
 
     srv.removeWebSocketTopicListener = function (topicName, callback) {
-        if (!topicName || !callback) {
-            throw "Unable to unSubscribe WebSocket: not enough data."
-        }
-        eventsService.removeEventListener(topicName, callback);
+        eventsService.removeAppEventListener(topicName, callback);
         console.info("removeWebSocketTopicListener: unSubscribed for: " + topicName);
     };
 
@@ -80,51 +93,14 @@ IGNITION_FRONT_APP.service('webSocketService', ['$rootScope', '$timeout', '$q', 
         var mappedFrame = mapConnectionFrame(frame);
         sessionUserName = mappedFrame.wsConnectedAsUserName;
 
-        _.forOwn(srv.WebSocketDestination.WebSocketTopics, function (value, key) {
-            subscribeForNotifications(value, function (webSockMessage) {
-                var payloadBodyDto = JSON.parse(webSockMessage['body']);
-                fireWebSocketEvent(value, payloadBodyDto)
-            });
-        });
-
-        _.forOwn(srv.WebSocketDestination.WebSocketQueues, function (value, key) {
-            subscribeForNotifications(value, function (webSockMessage) {
-                var payloadBodyDto = JSON.parse(webSockMessage['body']);
-                fireWebSocketEvent(value, payloadBodyDto)
-            });
-        });
-
         notifyConnected();
-        console.info("spaWebSocketService: connected as user name: " + sessionUserName);
-
-        /*if (!sessionUserName) {
-            console.info("spaWebSocketService: no WS subscriptions for anon users. Disconnecting.");
-            disconnectStompClient();
-            return;
-        }*/
-
-        setupWsConnectionSession();
+        console.info("spaWebSocketService: connected: " + sessionUserName);
     }
 
     function disconnectStompClient() {
         if (stompClient != null) {
             stompClient.disconnect();
         }
-    }
-
-    function setupWsConnectionSession() {
-        var sessionSetupSubs = stompClient.subscribe(SUBSCRIBE_TOPIC, function (payload) {
-            var SetupWebSocketSessionSettingsDto = JSON.parse(payload.body);
-            var sessionCompanyId = SetupWebSocketSessionSettingsDto['webSocketSessionCompanyIdIfAny'];
-
-            console.info("spaWebSocketService: sessionSetup for companyId: " + sessionCompanyId);
-        });
-
-        //console.info("spaWebSocketService: session setup subscription: " + sessionSetupSubs['id']);
-    }
-
-    function subscribeForNotifications(topicName, handlerFn) {
-        stompClient.subscribe(topicName, handlerFn);
     }
 
     function errorCallback(error) {
@@ -152,26 +128,23 @@ IGNITION_FRONT_APP.service('webSocketService', ['$rootScope', '$timeout', '$q', 
     }
 
     function notifyConnected() {
-        fireWebSocketEvent(srv.WebSocketDestination.SERVER_AVAILABILITY_EVT, {
-            serverAvailEvtIsWentOnline: true
+        fireWebSocketDest(srv.WebSocketDest.SERVER_AVAILABILITY_EVT, {
+            isServerOnline: true
         });
     }
 
     function notifyDisconnected() {
-
-        // Notify subscribers about communications problems after timeout as disconnection may be temporary
         $timeout(function () {
             if (!isStompConnected) {
-                fireWebSocketEvent(srv.WebSocketDestination.SERVER_AVAILABILITY_EVT, {
-                    serverAvailEvtIsWentOnline: false
+                fireWebSocketDest(srv.WebSocketDest.SERVER_AVAILABILITY_EVT, {
+                    isServerOnline: false
                 });
             }
         }, DISCONNECT_ACKNOWLEDGE_TIMEOUT_MS);
     }
 
-    function fireWebSocketEvent(topicName, payload) {
-
-        eventsService.fireEventName(topicName, payload);
+    function fireWebSocketDest(topicName, payload) {
+        eventsService.fireAppEvent(topicName, payload);
         $timeout(function () {
             $rootScope.$apply();
         });
