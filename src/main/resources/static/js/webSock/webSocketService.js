@@ -48,7 +48,7 @@ IGNITION_FRONT_APP.service('webSocketService', ['$rootScope', '$timeout', '$q', 
         eventsService.addAppEventListener(topicName, callback);
         console.info("addWebSocketTopicListener: subscribed for: " + topicName);
 
-        if(!_.includes(subscribedDestinations, topicName)){
+        if (!_.includes(subscribedDestinations, topicName)) {
             stompClient.subscribe(topicName, function (webSockMessage) {
                 var payloadBodyDto = JSON.parse(webSockMessage['body']);
                 fireWebSocketDest(topicName, payloadBodyDto)

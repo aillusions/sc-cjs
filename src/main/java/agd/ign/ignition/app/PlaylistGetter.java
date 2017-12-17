@@ -68,17 +68,17 @@ public class PlaylistGetter {
         return new File(STORAGE_PATH + File.separator + songId + File.separator + fileName).toPath().toAbsolutePath();
     }
 
-    public  String getSongBasePathStr(String songId) {
+    public String getSongBasePathStr(String songId) {
         String rv = getSongBasePath(songId).toString();
         new File(rv).mkdir();
         return rv;
     }
 
-    public  Path getSongPlaylistPath(String songId) {
+    public Path getSongPlaylistPath(String songId) {
         return new File(getSongBasePathStr(songId) + File.separator + PLAYLIST_FILE_NAME).toPath();
     }
 
-    public  Path getSongMetadataPath(String songId) {
+    public Path getSongMetadataPath(String songId) {
         return new File(getSongBasePathStr(songId) + File.separator + META_FILE_NAME).toPath();
     }
 
@@ -86,7 +86,7 @@ public class PlaylistGetter {
         return "" + i + ".mp3";
     }
 
-    public  Path getSongMp3Path(int i, String songId) {
+    public Path getSongMp3Path(int i, String songId) {
         return new File(getSongBasePathStr(songId) + File.separator + getMp3FileName(i)).toPath();
     }
 

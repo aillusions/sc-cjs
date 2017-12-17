@@ -1,32 +1,29 @@
-
-
 <div ng-controller="ignitionFrontMainCtrl as mainCtrl" ng-init="mainCtrl.initIgnitionFront()">
 
     <h1>{{'ign.resource.hello' | translate }}</h1>
 
-    <hr />
+    <hr/>
 
     <ng-include src=" 'html/ignitionConfigTemplate.html' "></ng-include>
 
-    <hr />
+    <hr/>
 
     <ng-include src=" 'html/ignitionPlayTemplate.html' "></ng-include>
 
-    <hr />
+    <hr/>
 
 
+    <!--    <br />
+        <br />
 
-<!--    <br />
-    <br />
+        <button ng-click="mainCtrl.onPlayNextRecording()" style="width:150px; height:60px; background-color:#0073a0">
+            NEXT &gt;
+        </button>
 
-    <button ng-click="mainCtrl.onPlayNextRecording()" style="width:150px; height:60px; background-color:#0073a0">
-        NEXT &gt;
-    </button>
+        <hr />
 
-    <hr />
-
-    <div ng-repeat="availSong in mainCtrl.availableMappedSongsList">
-        <a href="javascript:void(0)" ng-click="mainCtrl.onPlaySelectedSong(availSong)">{{availSong.ignitionAvailSongId}}</a>
-    </div>-->
+        <div ng-repeat="availSong in mainCtrl.availableMappedSongsList">
+            <a href="javascript:void(0)" ng-click="mainCtrl.onPlaySelectedSong(availSong)">{{availSong.ignitionAvailSongId}}</a>
+        </div>-->
 
 </div>

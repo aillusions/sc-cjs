@@ -8,7 +8,7 @@ IGNITION_FRONT_APP.value('ignitionPlayConfig', {
     getIgnitionCfgSnippetLengthMs: function () {
         return (this.ignitionCfgSnippetLength * 1000);
     },
-    getIgnitionCfgSnippetsNum:function () {
+    getIgnitionCfgSnippetsNum: function () {
         return (this.ignitionCfgSnippetsNum);
     },
     getIgnitionCfgPlaybackVolume: function () {

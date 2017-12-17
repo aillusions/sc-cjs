@@ -16,7 +16,7 @@ IGNITION_FRONT_APP.config(function ($locationProvider) {
 /**
  *
  */
-IGNITION_FRONT_APP.config(['$translateProvider', function($translateProvider) {
+IGNITION_FRONT_APP.config(['$translateProvider', function ($translateProvider) {
     $translateProvider.useStaticFilesLoader({
         prefix: 'json/resources_',
         suffix: '.json'
