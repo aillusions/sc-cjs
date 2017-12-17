@@ -4,6 +4,7 @@ import agd.ign.ignition.AsyncService;
 import agd.ign.ignition.dto.get.AvailSongDto;
 import agd.ign.ignition.dto.get.GetAvailSongsDto;
 import agd.ign.ignition.sys.ExecutionTime;
+import com.gmail.kunicins.olegs.libshout.Libshout;
 import lombok.Getter;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,10 +12,7 @@ import org.springframework.http.CacheControl;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashSet;
@@ -63,9 +61,20 @@ public class FeedRestController {
         return rv;
     }
 
+    // http://localhost:8090/ignition/rest/feed/streaming
+    @ExecutionTime(ms = 10)
+    @RequestMapping(value = "/feed/streaming", method = RequestMethod.GET, produces = "application/json")
+    @ResponseBody
+    public GetAvailSongsDto testStreaming() throws IOException {
+
+        asyncService.playAsync();
+
+        return new GetAvailSongsDto();
+    }
+
 
     // http://localhost:8090/ignition/rest/feed/play/2EFq0rCJ3Zz3.128.mp3
-    @RequestMapping(value = "/play/{songId:.+}/{fragIdx}", method = RequestMethod.GET)
+    @RequestMapping(value = "/feed/play/{songId:.+}/{fragIdx}", method = RequestMethod.GET)
     @ExecutionTime(ms = 20)
     public void getSongFragment(@PathVariable(name = "songId") String songId,
                                 @PathVariable(name = "fragIdx") Integer fragIdx,
@@ -89,5 +98,6 @@ public class FeedRestController {
 
         in.close();
     }
+
 
 }
