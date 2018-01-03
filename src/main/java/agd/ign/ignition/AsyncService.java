@@ -10,16 +10,34 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
+ * http://192.168.1.101:8000/java
+ * http://192.168.1.101:8000/stream
+ *
  * @author aillusions
  */
 @EnableAsync
-@Component
+@Service
 public class AsyncService {
+
+    private final Libshout icecast;
+
+    public AsyncService() throws IOException {
+        icecast = new Libshout();
+        icecast.setHost("192.168.1.101");
+        icecast.setPort(8000);
+        icecast.setProtocol(Libshout.PROTOCOL_HTTP);
+        icecast.setPassword("hackme");
+        icecast.setMount("/java");
+        icecast.setFormat(Libshout.FORMAT_MP3);
+        icecast.open();
+    }
 
     @Async()
     public void asyncDownloadFragments(NewSongDto dto) {
@@ -52,24 +70,15 @@ public class AsyncService {
     @Async()
     public void playAsync() throws IOException {
 
-        Libshout icecast = new Libshout();
-
         try {
-
-
-            icecast.setHost("192.168.1.102");
-            icecast.setPort(8000);
-            icecast.setProtocol(Libshout.PROTOCOL_HTTP);
-            icecast.setPassword("hackme");
-            icecast.setMount("/java");
-            icecast.setFormat(Libshout.FORMAT_MP3);
-            icecast.open();
 
             while (true) {
 
                 byte[] buffer = new byte[8024];
 
-                InputStream mp3 = new BufferedInputStream(new FileInputStream(new File("/Users/mac/sc-cjs/down/3qE2mUmOdqTm.128.mp3/15.mp3")));
+                // InputStream mp3 = new BufferedInputStream(new FileInputStream(new File("/Users/mac/sc-cjs/down/3qE2mUmOdqTm.128.mp3/5.mp3")));
+                // InputStream mp3 = new BufferedInputStream(new FileInputStream(new File("/Users/mac/sc-cjs/audiocheck.net_BrownNoise_15min.mp3")));
+                InputStream mp3 = new BufferedInputStream(this.getClass().getClassLoader().getResourceAsStream("audio/audiocheck.net_BrownNoise_15min.mp3"));
                 int read = mp3.read(buffer);
 
                 while (read > 0) {
