@@ -2,7 +2,6 @@ package agd.ign.ignition;
 
 import agd.ign.ignition.app.PlaylistGetter;
 import agd.ign.ignition.dto.put.NewSongDto;
-import com.gmail.kunicins.olegs.libshout.Libshout;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,17 +25,10 @@ import java.io.InputStream;
 @Service
 public class AsyncService {
 
-    private final Libshout icecast;
+
 
     public AsyncService() throws IOException {
-        icecast = new Libshout();
-        icecast.setHost("192.168.1.101");
-        icecast.setPort(8000);
-        icecast.setProtocol(Libshout.PROTOCOL_HTTP);
-        icecast.setPassword("hackme");
-        icecast.setMount("/java");
-        icecast.setFormat(Libshout.FORMAT_MP3);
-        icecast.open();
+
     }
 
     @Async()
@@ -82,7 +74,7 @@ public class AsyncService {
                 int read = mp3.read(buffer);
 
                 while (read > 0) {
-                    icecast.send(buffer, read);
+                    //icecast.send(buffer, read);
 
                     System.out.println("Sent bytes: " + read);
 
@@ -95,7 +87,7 @@ public class AsyncService {
         } finally {
 
             System.out.println("Sending done.");
-            icecast.close();
+            //icecast.close();
         }
     }
 }
