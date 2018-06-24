@@ -4,7 +4,20 @@ volumes:
     scc_mysql_data:
       name: scc_mysql_data
 
+networks:
+  scc_network:
+    name: scc_network
+    
 services:
+
+#  ci-tester-nginx:
+#    image: ci.xplace.com/tester/nginx:1.0.5
+#    container_name: ci-tester-nginx-srv
+#    ports:
+#      - 80:80
+#      - 443:443
+#    networks:
+#      - scc_network
 
   mysql-scc-dev:
     image: mysql:5.7
@@ -17,3 +30,5 @@ services:
     environment:
       - MYSQL_ALLOW_EMPTY_PASSWORD=true
 #      - MYSQL_DATABASE=ignition
+    networks:
+      - scc_network

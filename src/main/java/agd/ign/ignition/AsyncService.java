@@ -25,8 +25,6 @@ import java.io.InputStream;
 @Service
 public class AsyncService {
 
-
-
     public AsyncService() throws IOException {
 
     }
