@@ -10,14 +10,16 @@ networks:
     
 services:
 
-#  ci-tester-nginx:
-#    image: ci.xplace.com/tester/nginx:1.0.5
-#    container_name: ci-tester-nginx-srv
-#    ports:
-#      - 80:80
-#      - 443:443
-#    networks:
-#      - scc_network
+  scc-nginx:
+    build: nginx
+    container_name: scc-nginx-srv
+    ports:
+      - 80:80
+      - 443:443
+    environment:
+      sccInstanceHostPort: ${SCC_APP_WEB_HOST_PORT}
+    networks:
+      - scc_network
 
   mysql-scc-dev:
     image: mysql:5.7
