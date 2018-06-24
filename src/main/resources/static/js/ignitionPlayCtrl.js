@@ -70,7 +70,7 @@ IGNITION_FRONT_APP.controller('ignitionPlayCtrl', ['$scope', '$timeout', 'igniti
 
         var audio = playSongFragment(songByIdx.ignitionAvailSongId, fragIdx);
 
-        audio.addAppEventListener('playing', function () {
+        audio.addEventListener('playing', function () {
 
             if (CURRENT_PLAYING_AUDIO) {
                 CURRENT_PLAYING_AUDIO.pause();
