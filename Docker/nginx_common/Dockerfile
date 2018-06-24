@@ -17,8 +17,6 @@
 
 FROM centos:7
 
-LABEL maintainer="Evan Wies <evan@neomantra.net>"
-
 # Docker Build Arguments
 ARG RESTY_VERSION="1.13.6.1"
 ARG RESTY_LUAROCKS_VERSION="2.4.3"
