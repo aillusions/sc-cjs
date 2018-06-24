@@ -44,8 +44,8 @@ http {
         application/xml
         application/xml+rss;
 
-    upstream activemq_ups {
-        server MARKET_TC_HTTP_ENDPOINT;
+    upstream scc_server_ups {
+        server SCC_SERVER_HTTP_ENDPOINT;
     }
 
     server {
@@ -69,8 +69,27 @@ http {
         access_log /usr/local/openresty/nginx/logs/scc_access.log main;
         error_log  /usr/local/openresty/nginx/logs/scc_error.log;
 
+
+        location /ignition/stomp-endpoint {
+            access_log off;
+            proxy_buffering off;
+
+            proxy_pass   http://scc_server_ups;
+            proxy_next_upstream     timeout;
+            proxy_connect_timeout   30s;
+            proxy_read_timeout   300s;
+            proxy_set_header Host             $http_host;
+            proxy_set_header X-Forwarded-Host $host;
+            proxy_set_header X-Forwarded-Server $host;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+        }
+
         location /ignition/ {
-            proxy_pass   http://activemq_ups;
+            proxy_pass   http://scc_server_ups;
 
             proxy_next_upstream     timeout;
             proxy_connect_timeout   30s;
@@ -79,7 +98,7 @@ http {
             proxy_set_header X-Forwarded-Host $host;
             proxy_set_header X-Forwarded-Server $host;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_redirect   http://activemq_ups https://localhost;
+            proxy_redirect   http://scc_server_ups https://localhost;
         }
 
         ssl_certificate      /usr/local/openresty/nginx/conf/ssl/nginx.crt;
