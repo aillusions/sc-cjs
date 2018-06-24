@@ -2,8 +2,8 @@
  *
  */
 
-var IGNITION_SERVER_URL = "https://localhost/ignition/rest/song/new";
-// var IGNITION_SERVER_URL = "https://192.168.0.103/ignition/rest/song/new";
+//var IGNITION_SERVER_URL = "https://localhost/ignition/rest/song/new";
+var IGNITION_SERVER_URL = "https://192.168.1.104//ignition/rest/song/new";
 
 var SONG_DATA = getEmptySongData();
 
@@ -14,12 +14,13 @@ function sendDataToServerIf() {
 
         sendDataToServer(SONG_DATA);
 
-        debugger;
         SONG_DATA = getEmptySongData();
     }
 }
 
 function sendDataToServer(songData) {
+
+    var songTitle = songData.foundSongTitle;
 
     $.ajax({
         type: 'POST',
@@ -38,10 +39,10 @@ function sendDataToServer(songData) {
 
         },
         success: function (AbstractResponse) {
-            logInfo("Sending succeed");
+            logInfo("Sent: " + songTitle);
         },
         error: function (xhr, ajaxOptions, thrownError) {
-            logInfo("Sending filed...");
+            logInfo("Sending filed: " + songTitle + " " + thrownError);
         },
         complete: function () {
 
@@ -49,7 +50,7 @@ function sendDataToServer(songData) {
         contentType: "application/json; charset=utf-8",
         cache: false,
         dataType: 'json',
-        timeout: 1000
+        timeout: 10 * 1000 // 10 sec
     });
 }
 
@@ -109,7 +110,6 @@ function onXhrRequest(url) {
 
 function watchSongTitle() {
     setInterval(function () {
-        //debugger;
 
         var songDiv = $('div.playbackSoundBadge__title');
         var songLink = songDiv.find('a');
@@ -126,7 +126,7 @@ function watchSongTitle() {
 }
 
 function init() {
-    console.info("ignition script init.");
+    logInfo("ignition script init.");
     watchSongTitle();
     registerRequestInterceptor(onXhrRequest);
 }
@@ -140,7 +140,7 @@ function getEmptySongData() {
 }
 
 function logInfo(message) {
-    console.info("sc-cjs: " + message);
+    console.info("------> " + message);
 }
 
 init();
