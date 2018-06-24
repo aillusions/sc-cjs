@@ -11,7 +11,7 @@ networks:
 services:
 
   scc-nginx:
-    build: nginx
+    image: scc-nginx:1.13.6.1-0
     container_name: scc-nginx-srv
     ports:
       - 80:80

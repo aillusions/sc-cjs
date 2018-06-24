@@ -2,7 +2,7 @@
 # Note on prod: nginx 1.11.0 (with lua and pagespeed 1.11.3.2)
 #
 
-FROM ci.xplace.com/common/openresty:1.13.6.1-1
+FROM openresty-bundle:1.13.6.1-0
 
 ENV sccInstanceHostPort=scc-tomcat-dev:8090
 
