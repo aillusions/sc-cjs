@@ -66,9 +66,10 @@ http {
         proxy_buffers   4 256k;
         proxy_busy_buffers_size   256k;
 
-        location /ignition/ {
-            access_log access.log main;
+        access_log /usr/local/openresty/nginx/logs/scc_access.log main;
+        error_log  /usr/local/openresty/nginx/logs/scc_error.log;
 
+        location /ignition/ {
             proxy_pass   http://activemq_ups;
 
             proxy_next_upstream     timeout;
